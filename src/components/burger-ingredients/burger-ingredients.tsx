@@ -1,3 +1,4 @@
+import { useModal } from '@/hooks/useModal';
 import { Button, Counter, Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useRef, useMemo, useCallback } from 'react';
 
@@ -24,6 +25,8 @@ export const BurgerIngredients = ({
   const sauceRef = useRef<HTMLParagraphElement>(null);
   const mainRef = useRef<HTMLParagraphElement>(null);
   const [currentTab, setCurrentTab] = useState('bun');
+  const { isModalOpen, openModal, closeModal } = useModal();
+  const [selectIngredient, setSelectIngredient] = useState<TIngredient>();
 
   const buns = useMemo(() => ingredients.filter((i) => i.type === 'bun'), [ingredients]);
   const mains = useMemo(
@@ -35,45 +38,49 @@ export const BurgerIngredients = ({
     [ingredients]
   );
 
-  const scrollTo = (ref: React.RefObject<HTMLParagraphElement | null>): void => {
-    if (ref.current) {
-      ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
   const handleTabClick = useCallback(
-    (
-      tab: 'bun' | 'main' | 'sauce',
-      ref: React.RefObject<HTMLParagraphElement | null>
-    ) => {
+    (tab: 'bun' | 'main' | 'sauce') => {
       setCurrentTab(tab);
-      scrollTo(ref);
+
+      let ref: React.RefObject<HTMLParagraphElement | null> | null = null;
+      if (tab === 'bun') ref = bunRef;
+      else if (tab === 'sauce') ref = sauceRef;
+      else if (tab === 'main') ref = mainRef;
+
+      if (ref?.current) {
+        ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     },
-    [setCurrentTab, scrollTo]
+    [setCurrentTab]
   );
 
+  const handleIngredientClick = useCallback((ingredient: TIngredient) => {
+    setSelectIngredient(ingredient);
+    openModal();
+  }, []);
+
   return (
-    <section className={`${styles.burger_ingredients} custom-scroll`}>
+    <section className={`${styles.burger_ingredients}`}>
       <nav>
         <ul className={styles.menu}>
           <Tab
             value="bun"
             active={currentTab === 'bun'}
-            onClick={() => handleTabClick('bun', bunRef)}
+            onClick={() => handleTabClick('bun')}
           >
             Булки
           </Tab>
           <Tab
             value="sauce"
             active={currentTab === 'sauce'}
-            onClick={() => handleTabClick('sauce', sauceRef)}
+            onClick={() => handleTabClick('sauce')}
           >
             Соусы
           </Tab>
           <Tab
             value="main"
             active={currentTab === 'main'}
-            onClick={() => handleTabClick('main', mainRef)}
+            onClick={() => handleTabClick('main')}
           >
             Начинки
           </Tab>
@@ -85,10 +92,11 @@ export const BurgerIngredients = ({
         </p>
         <ul className={`${styles.type_ingredients}`}>
           {buns.map((i) => (
-            <ItemIngredients
+            <Ingredient
               key={i._id}
               item={i}
-              onClick={changeList}
+              onClick={handleIngredientClick}
+              addClick={changeList}
               counter={counts[i._id] || 0}
             />
           ))}
@@ -98,10 +106,11 @@ export const BurgerIngredients = ({
         </p>
         <ul className={`${styles.type_ingredients} custom-scroll`}>
           {sauces.map((i) => (
-            <ItemIngredients
+            <Ingredient
               key={i._id}
               item={i}
-              onClick={changeList}
+              onClick={handleIngredientClick}
+              addClick={changeList}
               counter={counts[i._id] ?? 0}
             />
           ))}
@@ -111,53 +120,55 @@ export const BurgerIngredients = ({
         </p>
         <ul className={`${styles.type_ingredients} custom-scroll`}>
           {mains.map((i) => (
-            <ItemIngredients
+            <Ingredient
               key={i._id}
               item={i}
-              onClick={changeList}
+              onClick={handleIngredientClick}
+              addClick={changeList}
               counter={counts[i._id] ?? 0}
             />
           ))}
         </ul>
       </div>
+      {isModalOpen && selectIngredient && (
+        <Modal title="Детали ингредиента" onClose={closeModal}>
+          <IngredientDetails item={selectIngredient} />
+        </Modal>
+      )}
     </section>
   );
 };
 
-type ItemIngredientsProps = {
+type IngredientProps = {
   item: TIngredient;
   onClick: (newIngredient: TIngredient) => void;
   counter: number;
+  addClick: (newIngredient: TIngredient) => void;
 };
 
-const ItemIngredients = ({
+const Ingredient = ({
   item,
   onClick,
   counter,
-}: ItemIngredientsProps): React.JSX.Element => {
-  const [isOpen, setIsOpen] = useState(false);
+  addClick,
+}: IngredientProps): React.JSX.Element => {
   const handleClick = (): void => {
-    setIsOpen(true);
+    onClick(item);
   };
 
   return (
     <li className={`${styles.one_ingredients}`}>
       <div onClick={handleClick}>
         {counter > 0 && <Counter count={counter} />}
-        <img src={item.image} />
+        <img src={item.image} alt={item.name} />
         <PriceIngredient price={item.price} />
         <p className={styles.ingredient_name}>{item.name}</p>
-        {isOpen && (
-          <Modal title="Детали ингредиента" onClose={() => setIsOpen(false)}>
-            <IngredientDetails item={item} />
-          </Modal>
-        )}
       </div>
       <Button
         htmlType="button"
         type="secondary"
         size="small"
-        onClick={() => onClick(item)}
+        onClick={() => addClick(item)}
       >
         Временное добавление
       </Button>

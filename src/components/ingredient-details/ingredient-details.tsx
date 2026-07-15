@@ -9,7 +9,7 @@ type DetailsProps = {
 export const IngredientDetails = ({ item }: DetailsProps): React.JSX.Element => {
   return (
     <div className={styles.ingredient__modal}>
-      <img src={item.image_large} />
+      <img src={item.image_large} alt={item.name} />
       <p className="text text_type_main-medium">{item.name}</p>
       <div
         className={`text text_type_main-default text_color_inactive mt-8 ${styles.ingredient__info}`}

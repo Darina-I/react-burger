@@ -52,7 +52,7 @@ export const BurgerConstructor = ({
         {selectBurger.buns && (
           <IngredientBurger isBuns item={selectBurger.buns} type="top" />
         )}
-        <div className={`${styles.ingredients}`}>
+        <div className={`${styles.ingredients} p-1`}>
           {selectBurger.ingredients.map((item, index) => (
             <IngredientBurger
               item={item}

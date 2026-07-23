@@ -1,4 +1,7 @@
-import { detailsIngredient, closeIngredientModal } from '@/store/ingredientSlice';
+import {
+  detailsIngredient,
+  closeIngredientModal,
+} from '@/services/ingredients/ingredientSlice';
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +10,7 @@ import { Ingredient } from '../ingredient-card/ingredient-card';
 import { IngredientDetails } from '../ingredient-details/ingredient-details';
 import { Modal } from '../modal/modal';
 
-import type { RootState } from '@/store/store';
+import type { RootState } from '@/store';
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
@@ -22,7 +25,7 @@ export const BurgerIngredients = ({
   const dispatch = useDispatch();
   const selectedIngredient = useSelector((state: RootState) => state.ingredient.details);
   const isModalOpen = useSelector((state: RootState) => state.ingredient.isModalOpen);
-  const burger = useSelector((state: RootState) => state.burger);
+  const order = useSelector((state: RootState) => state.order);
 
   const bunRef = useRef<HTMLParagraphElement | null>(null);
   const sauceRef = useRef<HTMLParagraphElement | null>(null);
@@ -57,17 +60,17 @@ export const BurgerIngredients = ({
 
   const counts = useMemo(() => {
     const result: Record<string, number> = {};
-    burger.ingredients.map((item) => {
+    order.ingredients.map((item) => {
       result[item._id] = (result[item._id] || 0) + 1;
     });
 
-    if (burger.buns) {
-      const id = burger.buns._id;
+    if (order.buns) {
+      const id = order.buns._id;
       result[id] = (result[id] || 0) + 2;
     }
 
     return result;
-  }, [burger]);
+  }, [order]);
 
   const handleScroll = useCallback(() => {
     if (!listRef.current) return;

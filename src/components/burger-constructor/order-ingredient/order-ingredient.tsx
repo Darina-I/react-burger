@@ -1,4 +1,4 @@
-import { moveIngredient } from '@/store/burgerSlice';
+import { moveIngredient } from '@/services/order/orderSlice';
 import {
   DragIcon,
   ConstructorElement,
@@ -17,12 +17,13 @@ type BurgerIngredientProps = {
   type?: 'top' | 'bottom';
   isPlaceholder?: boolean;
   placeholder?: string;
-  index?: number;
+  hasBorder?: boolean | undefined;
 };
 
 type DragItem = {
   id: string;
 };
+
 export const OrderIngredient = ({
   isBuns = false,
   item,
@@ -30,11 +31,12 @@ export const OrderIngredient = ({
   type,
   isPlaceholder = false,
   placeholder,
+  hasBorder,
 }: BurgerIngredientProps): React.JSX.Element => {
   const dispatch = useDispatch();
   const [{ isDragging }, dragRef] = useDrag({
     type: 'MOVE_INGREDIENT',
-    item: () => ({ id: item?.nanoid }),
+    item: () => ({ id: item?.nanoid, isBuns: isBuns }),
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
 
@@ -78,6 +80,7 @@ export const OrderIngredient = ({
       ) : (
         <div
           className={`${styles.placeholder} constructor-element 
+          ${hasBorder ? styles.placeholder_border : ''}
           ${type === 'top' ? 'constructor-element_pos_top ' : ''} 
           ${type === 'bottom' ? 'constructor-element_pos_bottom ' : ''}`}
         >

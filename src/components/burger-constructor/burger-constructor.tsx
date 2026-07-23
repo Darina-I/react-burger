@@ -1,6 +1,6 @@
-import { usePostOrderMutation } from '@/api/ingredientsApi';
 import { useModal } from '@/hooks/useModal';
-import { addIngredient, deleteIngredient } from '@/store/burgerSlice';
+import { usePostOrderMutation } from '@/services/order/orderApi';
+import { addIngredient, deleteIngredient } from '@/services/order/orderSlice';
 import { Button, Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useMemo } from 'react';
 import { useDrop } from 'react-dnd';
@@ -11,8 +11,8 @@ import { PriceIngredient } from '../price-ingredient/price-ingredient';
 import { OrderDetails } from './order-details/order-details';
 import { OrderIngredient } from './order-ingredient/order-ingredient';
 
-import type { RootState } from '@/store/store';
-import type { Order, BurgerItem } from '@/utils/types';
+import type { RootState } from '@/store';
+import type { Order, BurgerItem, TIngredient } from '@/utils/types';
 
 import styles from './burger-constructor.module.css';
 
@@ -22,35 +22,38 @@ export const BurgerConstructor = (): React.JSX.Element => {
   const [postOrder, { isLoading }] = usePostOrderMutation();
   const [orderDetails, setOrderDetails] = useState<Order>();
 
-  const burger = useSelector((state: RootState) => state.burger);
+  const { ingredients, buns } = useSelector((state: RootState) => state.order);
 
-  const [, dropRef] = useDrop({
+  const [{ typeDrag }, dropRef] = useDrop<TIngredient, void, { typeDrag?: string }>({
     accept: 'INGREDIENT',
     drop: (item): void => {
       dispatch(addIngredient(item as BurgerItem));
     },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
+    collect: (monitor) => {
+      const dragItem = monitor.getItem();
+      const typeDrag = dragItem?.type;
+
+      return { typeDrag };
+    },
   });
 
   const summary = useMemo(() => {
-    if (burger.ingredients.length === 0) {
+    if (ingredients.length === 0) {
       return 0;
     }
-    let sum = burger.ingredients.reduce((acc, ingredient) => {
+    let sum = ingredients.reduce((acc, ingredient) => {
       const price = Number(ingredient.price);
       return acc + price;
     }, 0);
-    if (burger.buns) {
-      sum += burger.buns.price * 2;
+    if (buns) {
+      sum += buns.price * 2;
     }
 
     return sum;
-  }, [burger]);
+  }, [ingredients, buns]);
 
   const handleSubmitOrder = (): void => {
-    if (!burger.buns || burger.ingredients.length === 0) {
+    if (!buns || ingredients.length === 0) {
       alert('Соберите бургер: нужны булка и хотя бы один ингредиент');
       return;
     }
@@ -64,9 +67,9 @@ export const BurgerConstructor = (): React.JSX.Element => {
   };
 
   const orderBurger = async (): Promise<void> => {
-    if (burger.ingredients.length > 0 && burger.buns) {
-      const ingredientsIds = burger.ingredients.map((i) => i._id);
-      const bunId = burger.buns?._id;
+    if (ingredients.length > 0 && buns) {
+      const ingredientsIds = ingredients.map((i) => i._id);
+      const bunId = buns?._id;
       const payload = [bunId, ...ingredientsIds, bunId];
       const result = await postOrder({ ingredients: payload }).unwrap();
       setOrderDetails(result as Order);
@@ -79,17 +82,21 @@ export const BurgerConstructor = (): React.JSX.Element => {
         ref={dropRef as unknown as React.Ref<HTMLDivElement>}
         className={styles.burger}
       >
-        {burger.buns ? (
-          <OrderIngredient isBuns item={burger.buns} type="top" />
+        {buns ? (
+          <OrderIngredient isBuns item={buns} type="top" />
         ) : (
-          <OrderIngredient type="top" isPlaceholder placeholder="Выберите булку" />
+          <OrderIngredient
+            type="top"
+            isPlaceholder
+            placeholder="Выберите булку"
+            hasBorder={typeDrag ? typeDrag === 'bun' : undefined}
+          />
         )}
         <div className={`${styles.ingredients} p-1`}>
-          {burger.ingredients.length > 0 ? (
+          {ingredients.length > 0 ? (
             <>
-              {burger.ingredients.map((item, index) => (
+              {ingredients.map((item) => (
                 <OrderIngredient
-                  index={index}
                   item={item}
                   onDelete={() => dispatch(deleteIngredient(item.nanoid))}
                   key={item.nanoid}
@@ -97,13 +104,23 @@ export const BurgerConstructor = (): React.JSX.Element => {
               ))}
             </>
           ) : (
-            <OrderIngredient isPlaceholder placeholder="Выберите начинку" />
+            <OrderIngredient
+              isPlaceholder
+              placeholder="Выберите начинку"
+              hasBorder={typeDrag ? typeDrag !== 'bun' : undefined}
+            />
           )}
         </div>
-        {burger.buns ? (
-          <OrderIngredient isBuns item={burger.buns} type="bottom" />
+        {buns ? (
+          <OrderIngredient isBuns item={buns} type="bottom" />
         ) : (
-          <OrderIngredient type="bottom" isPlaceholder placeholder="Выберите булку" />
+          <OrderIngredient
+            type="bottom"
+            isPlaceholder
+            placeholder="Выберите булку"
+            isBuns
+            hasBorder={typeDrag ? typeDrag === 'bun' : undefined}
+          />
         )}
       </div>
       <div className={`${styles.create_order} mt-10`}>

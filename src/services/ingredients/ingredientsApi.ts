@@ -1,7 +1,7 @@
 import { BASE_URL_API } from '@/utils/constant';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { INGREDIENT_API, ORDER_API } from './config';
+import { INGREDIENT_API } from '../../api/config';
 
 import type { TIngredient } from '@/utils/types';
 
@@ -20,17 +20,7 @@ export const ingredientsApi = createApi({
         return (response as IngredientResponse).data;
       },
     }),
-    postOrder: builder.mutation<
-      { name: string; order: { number: number }; success: boolean },
-      { ingredients: string[] }
-    >({
-      query: (data) => ({
-        url: ORDER_API,
-        method: 'POST',
-        body: data,
-      }),
-    }),
   }),
 });
 
-export const { useGetIngredientsQuery, usePostOrderMutation } = ingredientsApi;
+export const { useGetIngredientsQuery } = ingredientsApi;

@@ -1,12 +1,36 @@
-import { request } from '@/utils/request';
+import { BASE_URL_API } from '@/utils/constant';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { INGREDIENT_API } from './config';
+import { INGREDIENT_API, ORDER_API } from './config';
 
 import type { TIngredient } from '@/utils/types';
 
-export const getIngredients = async (): Promise<{ data: TIngredient[] }> => {
-  return request<{ data: TIngredient[] }>({
-    url: INGREDIENT_API,
-    method: 'get',
-  });
+type IngredientResponse = {
+  data: TIngredient[];
+  success: boolean;
 };
+
+export const ingredientsApi = createApi({
+  reducerPath: 'ingredientsApi',
+  baseQuery: fetchBaseQuery({ baseUrl: BASE_URL_API }),
+  endpoints: (builder) => ({
+    getIngredients: builder.query<TIngredient[], void>({
+      query: () => INGREDIENT_API,
+      transformResponse: (response) => {
+        return (response as IngredientResponse).data;
+      },
+    }),
+    postOrder: builder.mutation<
+      { name: string; order: { number: number }; success: boolean },
+      { ingredients: string[] }
+    >({
+      query: (data) => ({
+        url: ORDER_API,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+  }),
+});
+
+export const { useGetIngredientsQuery, usePostOrderMutation } = ingredientsApi;

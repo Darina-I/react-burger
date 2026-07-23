@@ -1,42 +1,112 @@
-import { useModal } from '@/hooks/useModal';
-import { Button, Counter, Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useState, useRef, useMemo, useCallback } from 'react';
+import { detailsIngredient, closeIngredientModal } from '@/store/ingredientSlice';
+import { Tab } from '@krgaa/react-developer-burger-ui-components';
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { Ingredient } from '../ingredient-card/ingredient-card';
 import { IngredientDetails } from '../ingredient-details/ingredient-details';
 import { Modal } from '../modal/modal';
-import { PriceIngredient } from '../price-ingredient/price-ingredient';
 
+import type { RootState } from '@/store/store';
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
 
 type TBurgerIngredientsProps = {
   ingredients: TIngredient[];
-  changeList: (newIngredient: TIngredient) => void;
-  counts: Record<string, number>;
 };
 
 export const BurgerIngredients = ({
   ingredients,
-  changeList,
-  counts,
 }: TBurgerIngredientsProps): React.JSX.Element => {
-  const bunRef = useRef<HTMLParagraphElement>(null);
-  const sauceRef = useRef<HTMLParagraphElement>(null);
-  const mainRef = useRef<HTMLParagraphElement>(null);
-  const [currentTab, setCurrentTab] = useState('bun');
-  const { isModalOpen, openModal, closeModal } = useModal();
-  const [selectIngredient, setSelectIngredient] = useState<TIngredient>();
+  const dispatch = useDispatch();
+  const selectedIngredient = useSelector((state: RootState) => state.ingredient.details);
+  const isModalOpen = useSelector((state: RootState) => state.ingredient.isModalOpen);
+  const burger = useSelector((state: RootState) => state.burger);
 
-  const buns = useMemo(() => ingredients.filter((i) => i.type === 'bun'), [ingredients]);
-  const mains = useMemo(
-    () => ingredients.filter((i) => i.type === 'main'),
-    [ingredients]
-  );
-  const sauces = useMemo(
-    () => ingredients.filter((i) => i.type === 'sauce'),
-    [ingredients]
-  );
+  const bunRef = useRef<HTMLParagraphElement | null>(null);
+  const sauceRef = useRef<HTMLParagraphElement | null>(null);
+  const mainRef = useRef<HTMLParagraphElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
+
+  const [currentTab, setCurrentTab] = useState('bun');
+
+  const { buns, mains, sauces } = useMemo(() => {
+    const buns: TIngredient[] = [];
+    const mains: TIngredient[] = [];
+    const sauces: TIngredient[] = [];
+
+    ingredients.forEach((item) => {
+      switch (item.type) {
+        case 'bun':
+          buns.push(item);
+          break;
+        case 'main':
+          mains.push(item);
+          break;
+        case 'sauce':
+          sauces.push(item);
+          break;
+        default:
+          break;
+      }
+    });
+
+    return { buns, mains, sauces };
+  }, [ingredients]);
+
+  const counts = useMemo(() => {
+    const result: Record<string, number> = {};
+    burger.ingredients.map((item) => {
+      result[item._id] = (result[item._id] || 0) + 1;
+    });
+
+    if (burger.buns) {
+      const id = burger.buns._id;
+      result[id] = (result[id] || 0) + 2;
+    }
+
+    return result;
+  }, [burger]);
+
+  const handleScroll = useCallback(() => {
+    if (!listRef.current) return;
+    const refs = [
+      { ref: bunRef, type: 'bun' as const },
+      { ref: sauceRef, type: 'sauce' as const },
+      { ref: mainRef, type: 'main' as const },
+    ];
+
+    const containerTop = listRef.current.getBoundingClientRect().top;
+
+    let current: (typeof refs)[number] | null = null;
+    let maxTop = -Infinity;
+
+    for (const item of refs) {
+      const element = item.ref.current;
+      if (!element) continue;
+
+      const top = element.getBoundingClientRect().top - containerTop;
+
+      if (top <= 1 && top > maxTop) {
+        maxTop = top;
+        current = item;
+      }
+    }
+
+    if (current) setCurrentTab(current.type);
+  }, []);
+
+  useEffect(() => {
+    const container = listRef.current;
+    if (!container) return;
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+
+    handleScroll();
+
+    return (): void => container.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   const handleTabClick = useCallback(
     (tab: 'bun' | 'main' | 'sauce') => {
@@ -54,10 +124,12 @@ export const BurgerIngredients = ({
     [setCurrentTab]
   );
 
-  const handleIngredientClick = useCallback((ingredient: TIngredient) => {
-    setSelectIngredient(ingredient);
-    openModal();
-  }, []);
+  const handleIngredientClick = useCallback(
+    (ingredient: TIngredient) => {
+      dispatch(detailsIngredient(ingredient));
+    },
+    [dispatch]
+  );
 
   return (
     <section className={`${styles.burger_ingredients}`}>
@@ -86,7 +158,7 @@ export const BurgerIngredients = ({
           </Tab>
         </ul>
       </nav>
-      <div className={`${styles.list_ingredients} custom-scroll pr-2`}>
+      <div className={`${styles.list_ingredients} custom-scroll pr-2`} ref={listRef}>
         <p ref={bunRef} className={styles.block_name}>
           Булки
         </p>
@@ -96,7 +168,6 @@ export const BurgerIngredients = ({
               key={i._id}
               item={i}
               onClick={handleIngredientClick}
-              addClick={changeList}
               counter={counts[i._id] || 0}
             />
           ))}
@@ -110,7 +181,6 @@ export const BurgerIngredients = ({
               key={i._id}
               item={i}
               onClick={handleIngredientClick}
-              addClick={changeList}
               counter={counts[i._id] ?? 0}
             />
           ))}
@@ -124,54 +194,19 @@ export const BurgerIngredients = ({
               key={i._id}
               item={i}
               onClick={handleIngredientClick}
-              addClick={changeList}
               counter={counts[i._id] ?? 0}
             />
           ))}
         </ul>
       </div>
-      {isModalOpen && selectIngredient && (
-        <Modal title="Детали ингредиента" onClose={closeModal}>
-          <IngredientDetails item={selectIngredient} />
+      {isModalOpen && selectedIngredient && (
+        <Modal
+          title="Детали ингредиента"
+          onClose={() => dispatch(closeIngredientModal())}
+        >
+          <IngredientDetails item={selectedIngredient} />
         </Modal>
       )}
     </section>
-  );
-};
-
-type IngredientProps = {
-  item: TIngredient;
-  onClick: (newIngredient: TIngredient) => void;
-  counter: number;
-  addClick: (newIngredient: TIngredient) => void;
-};
-
-const Ingredient = ({
-  item,
-  onClick,
-  counter,
-  addClick,
-}: IngredientProps): React.JSX.Element => {
-  const handleClick = (): void => {
-    onClick(item);
-  };
-
-  return (
-    <li className={`${styles.one_ingredients}`}>
-      <div onClick={handleClick}>
-        {counter > 0 && <Counter count={counter} />}
-        <img src={item.image} alt={item.name} />
-        <PriceIngredient price={item.price} />
-        <p className={styles.ingredient_name}>{item.name}</p>
-      </div>
-      <Button
-        htmlType="button"
-        type="secondary"
-        size="small"
-        onClick={() => addClick(item)}
-      >
-        Временное добавление
-      </Button>
-    </li>
   );
 };

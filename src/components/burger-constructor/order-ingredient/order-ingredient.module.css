@@ -1,0 +1,16 @@
+.ingredient__one {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.width_full {
+  width: 100%;
+}

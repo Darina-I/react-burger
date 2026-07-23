@@ -1,8 +1,9 @@
+import { useGetIngredientsQuery } from '@/services/ingredients/ingredientsApi';
 import {
   detailsIngredient,
   closeIngredientModal,
 } from '@/services/ingredients/ingredientSlice';
-import { Tab } from '@krgaa/react-developer-burger-ui-components';
+import { Tab, Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,14 +16,10 @@ import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
 
-type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-};
-
-export const BurgerIngredients = ({
-  ingredients,
-}: TBurgerIngredientsProps): React.JSX.Element => {
+export const BurgerIngredients = (): React.JSX.Element => {
   const dispatch = useDispatch();
+  const { data: ingredients, isLoading, error } = useGetIngredientsQuery();
+
   const selectedIngredient = useSelector((state: RootState) => state.ingredient.details);
   const isModalOpen = useSelector((state: RootState) => state.ingredient.isModalOpen);
   const order = useSelector((state: RootState) => state.order);
@@ -39,7 +36,7 @@ export const BurgerIngredients = ({
     const mains: TIngredient[] = [];
     const sauces: TIngredient[] = [];
 
-    ingredients.forEach((item) => {
+    ingredients?.forEach((item) => {
       switch (item.type) {
         case 'bun':
           buns.push(item);
@@ -133,6 +130,18 @@ export const BurgerIngredients = ({
     },
     [dispatch]
   );
+
+  if (isLoading) {
+    return (
+      <div className={styles.preloader}>
+        <Preloader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-red-500">Ошибка загрузки страницы</div>;
+  }
 
   return (
     <section className={`${styles.burger_ingredients}`}>

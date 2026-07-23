@@ -69,7 +69,9 @@ export const OrderIngredient = ({
         >
           {!isBuns && <DragIcon type="primary" />}
           <ConstructorElement
-            text={item.name}
+            text={
+              isBuns ? item.name + (type === 'top' ? ' (верх)' : ' (низ)') : item.name
+            }
             price={item.price}
             thumbnail={item.image}
             type={type ?? undefined}

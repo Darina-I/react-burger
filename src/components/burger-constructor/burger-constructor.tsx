@@ -1,7 +1,12 @@
 import { useModal } from '@/hooks/useModal';
 import { usePostOrderMutation } from '@/services/order/orderApi';
-import { addIngredient, deleteIngredient } from '@/services/order/orderSlice';
+import {
+  addIngredient,
+  cleanOrder,
+  deleteIngredient,
+} from '@/services/order/orderSlice';
 import { Button, Preloader } from '@krgaa/react-developer-burger-ui-components';
+import { nanoid } from '@reduxjs/toolkit';
 import { useState, useMemo } from 'react';
 import { useDrop } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +17,7 @@ import { OrderDetails } from './order-details/order-details';
 import { OrderIngredient } from './order-ingredient/order-ingredient';
 
 import type { RootState } from '@/store';
-import type { Order, BurgerItem, TIngredient } from '@/utils/types';
+import type { Order, TIngredient } from '@/utils/types';
 
 import styles from './burger-constructor.module.css';
 
@@ -27,7 +32,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
   const [{ typeDrag }, dropRef] = useDrop<TIngredient, void, { typeDrag?: string }>({
     accept: 'INGREDIENT',
     drop: (item): void => {
-      dispatch(addIngredient(item as BurgerItem));
+      addIngredientWithId(item);
     },
     collect: (monitor) => {
       const dragItem = monitor.getItem();
@@ -36,6 +41,14 @@ export const BurgerConstructor = (): React.JSX.Element => {
       return { typeDrag };
     },
   });
+
+  const addIngredientWithId = (item: TIngredient): void => {
+    const newIngredient = {
+      ...item,
+      nanoid: nanoid(),
+    };
+    dispatch(addIngredient(newIngredient));
+  };
 
   const summary = useMemo(() => {
     if (ingredients.length === 0) {
@@ -54,7 +67,6 @@ export const BurgerConstructor = (): React.JSX.Element => {
 
   const handleSubmitOrder = (): void => {
     if (!buns || ingredients.length === 0) {
-      alert('Соберите бургер: нужны булка и хотя бы один ингредиент');
       return;
     }
 
@@ -73,6 +85,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
       const payload = [bunId, ...ingredientsIds, bunId];
       const result = await postOrder({ ingredients: payload }).unwrap();
       setOrderDetails(result as Order);
+      dispatch(cleanOrder());
     }
   };
 

@@ -1,6 +1,6 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-import type { TIngredient, BurgerItem } from '@/utils/types';
+import type { BurgerItem } from '@/utils/types';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 type OrderState = {
@@ -17,8 +17,8 @@ export const OrderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
-    addIngredient: (state, action: PayloadAction<TIngredient>) => {
-      const newIngredient = { ...action.payload, nanoid: nanoid() };
+    addIngredient: (state, action: PayloadAction<BurgerItem>) => {
+      const newIngredient = action.payload;
 
       if (newIngredient.type === 'bun') {
         state.buns = newIngredient;
@@ -42,8 +42,13 @@ export const OrderSlice = createSlice({
       const dragItem = state.ingredients.splice(fromIndex, 1)[0];
       state.ingredients.splice(toIndex, 0, dragItem);
     },
+    cleanOrder: (state) => {
+      state.buns = null;
+      state.ingredients = [];
+    },
   },
 });
 
-export const { addIngredient, deleteIngredient, moveIngredient } = OrderSlice.actions;
+export const { addIngredient, deleteIngredient, moveIngredient, cleanOrder } =
+  OrderSlice.actions;
 export default OrderSlice.reducer;

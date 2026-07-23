@@ -1,3 +1,4 @@
+import { useAppDispatch, useAppSelector } from '@/hooks/useAppHooks';
 import { useGetIngredientsQuery } from '@/services/ingredients/ingredientsApi';
 import {
   detailsIngredient,
@@ -5,24 +6,22 @@ import {
 } from '@/services/ingredients/ingredientSlice';
 import { Tab, Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { Ingredient } from '../ingredient-card/ingredient-card';
 import { IngredientDetails } from '../ingredient-details/ingredient-details';
 import { Modal } from '../modal/modal';
 
-import type { RootState } from '@/store';
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
 
 export const BurgerIngredients = (): React.JSX.Element => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { data: ingredients, isLoading, error } = useGetIngredientsQuery();
 
-  const selectedIngredient = useSelector((state: RootState) => state.ingredient.details);
-  const isModalOpen = useSelector((state: RootState) => state.ingredient.isModalOpen);
-  const order = useSelector((state: RootState) => state.order);
+  const selectedIngredient = useAppSelector((state) => state.ingredient.details);
+  const isModalOpen = useAppSelector((state) => state.ingredient.isModalOpen);
+  const order = useAppSelector((state) => state.order);
 
   const bunRef = useRef<HTMLParagraphElement | null>(null);
   const sauceRef = useRef<HTMLParagraphElement | null>(null);

@@ -1,3 +1,4 @@
+import { useAppDispatch, useAppSelector } from '@/hooks/useAppHooks';
 import { useModal } from '@/hooks/useModal';
 import { usePostOrderMutation } from '@/services/order/orderApi';
 import {
@@ -6,33 +7,30 @@ import {
   deleteIngredient,
 } from '@/services/order/orderSlice';
 import { Button, Preloader } from '@krgaa/react-developer-burger-ui-components';
-import { nanoid } from '@reduxjs/toolkit';
 import { useState, useMemo } from 'react';
 import { useDrop } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { Modal } from '../modal/modal';
 import { PriceIngredient } from '../price-ingredient/price-ingredient';
 import { OrderDetails } from './order-details/order-details';
 import { OrderIngredient } from './order-ingredient/order-ingredient';
 
-import type { RootState } from '@/store';
 import type { Order, TIngredient } from '@/utils/types';
 
 import styles from './burger-constructor.module.css';
 
 export const BurgerConstructor = (): React.JSX.Element => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { isModalOpen, openModal, closeModal } = useModal();
   const [postOrder, { isLoading }] = usePostOrderMutation();
   const [orderDetails, setOrderDetails] = useState<Order>();
 
-  const { ingredients, buns } = useSelector((state: RootState) => state.order);
+  const { ingredients, buns } = useAppSelector((state) => state.order);
 
   const [{ typeDrag }, dropRef] = useDrop<TIngredient, void, { typeDrag?: string }>({
     accept: 'INGREDIENT',
     drop: (item): void => {
-      addIngredientWithId(item);
+      dispatch(addIngredient(item));
     },
     collect: (monitor) => {
       const dragItem = monitor.getItem();
@@ -41,14 +39,6 @@ export const BurgerConstructor = (): React.JSX.Element => {
       return { typeDrag };
     },
   });
-
-  const addIngredientWithId = (item: TIngredient): void => {
-    const newIngredient = {
-      ...item,
-      nanoid: nanoid(),
-    };
-    dispatch(addIngredient(newIngredient));
-  };
 
   const summary = useMemo(() => {
     if (ingredients.length === 0) {

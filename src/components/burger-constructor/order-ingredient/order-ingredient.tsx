@@ -1,10 +1,10 @@
+import { useAppDispatch } from '@/hooks/useAppHooks';
 import { moveIngredient } from '@/services/order/orderSlice';
 import {
   DragIcon,
   ConstructorElement,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useDrag, useDrop } from 'react-dnd';
-import { useDispatch } from 'react-redux';
 
 import type { BurgerItem } from '@/utils/types';
 
@@ -33,7 +33,7 @@ export const OrderIngredient = ({
   placeholder,
   hasBorder,
 }: BurgerIngredientProps): React.JSX.Element => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [{ isDragging }, dragRef] = useDrag({
     type: 'MOVE_INGREDIENT',
     item: () => ({ id: item?.nanoid, isBuns: isBuns }),

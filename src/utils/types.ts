@@ -17,3 +17,15 @@ export type TSelectBurger = {
   ingredients: TIngredient[];
   buns?: TIngredient;
 };
+
+export type Order = {
+  name: string;
+  order: {
+    number: number;
+  };
+  success: boolean;
+};
+
+export type BurgerItem = {
+  nanoid: string;
+} & TIngredient;

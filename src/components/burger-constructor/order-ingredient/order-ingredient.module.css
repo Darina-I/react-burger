@@ -1,0 +1,20 @@
+.ingredient__one {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+.placeholder_border {
+  border: 1px dashed #4c4cff;
+}
+
+.width_full {
+  width: 100%;
+}

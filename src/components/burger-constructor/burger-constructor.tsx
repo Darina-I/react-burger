@@ -1,109 +1,152 @@
+import { useAppDispatch, useAppSelector } from '@/hooks/useAppHooks';
+import { useModal } from '@/hooks/useModal';
+import { usePostOrderMutation } from '@/services/order/orderApi';
 import {
-  Button,
-  ConstructorElement,
-  DragIcon,
-} from '@krgaa/react-developer-burger-ui-components';
-import { useState, useEffect } from 'react';
+  addIngredient,
+  cleanOrder,
+  deleteIngredient,
+} from '@/services/order/orderSlice';
+import { Button, Preloader } from '@krgaa/react-developer-burger-ui-components';
+import { useState, useMemo } from 'react';
+import { useDrop } from 'react-dnd';
 
 import { Modal } from '../modal/modal';
-import { OrderDetails } from '../order-details/order-details';
 import { PriceIngredient } from '../price-ingredient/price-ingredient';
+import { OrderDetails } from './order-details/order-details';
+import { OrderIngredient } from './order-ingredient/order-ingredient';
 
-import type { TIngredient } from '@utils/types';
+import type { Order, TIngredient } from '@/utils/types';
 
 import styles from './burger-constructor.module.css';
 
-type SelectBurger = {
-  ingredients: TIngredient[];
-  buns?: TIngredient;
-};
+export const BurgerConstructor = (): React.JSX.Element => {
+  const dispatch = useAppDispatch();
+  const { isModalOpen, openModal, closeModal } = useModal();
+  const [postOrder, { isLoading }] = usePostOrderMutation();
+  const [orderDetails, setOrderDetails] = useState<Order>();
 
-type TBurgerConstructorProps = {
-  selectBurger: SelectBurger;
-  deleteIngredient: (index: number) => void;
-};
+  const { ingredients, buns } = useAppSelector((state) => state.order);
 
-export const BurgerConstructor = ({
-  selectBurger,
-  deleteIngredient,
-}: TBurgerConstructorProps): React.JSX.Element => {
-  const [summary, setSummary] = useState<number>(0);
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [{ typeDrag }, dropRef] = useDrop<TIngredient, void, { typeDrag?: string }>({
+    accept: 'INGREDIENT',
+    drop: (item): void => {
+      dispatch(addIngredient(item));
+    },
+    collect: (monitor) => {
+      const dragItem = monitor.getItem();
+      const typeDrag = dragItem?.type;
 
-  useEffect(() => {
-    if (selectBurger.ingredients.length === 0) {
-      setSummary(0);
-      return;
+      return { typeDrag };
+    },
+  });
+
+  const summary = useMemo(() => {
+    if (ingredients.length === 0) {
+      return 0;
     }
-    let sum = selectBurger.ingredients.reduce((acc, ingredient) => {
+    let sum = ingredients.reduce((acc, ingredient) => {
       const price = Number(ingredient.price);
       return acc + price;
     }, 0);
-    if (selectBurger.buns) {
-      sum += selectBurger.buns.price * 2;
+    if (buns) {
+      sum += buns.price * 2;
     }
 
-    setSummary(sum);
-  }, [selectBurger]);
+    return sum;
+  }, [ingredients, buns]);
+
+  const handleSubmitOrder = (): void => {
+    if (!buns || ingredients.length === 0) {
+      return;
+    }
+
+    openModal();
+
+    orderBurger().catch((err) => {
+      console.error('Ошибка при оформлении заказа:', err);
+      closeModal();
+    });
+  };
+
+  const orderBurger = async (): Promise<void> => {
+    if (ingredients.length > 0 && buns) {
+      const ingredientsIds = ingredients.map((i) => i._id);
+      const bunId = buns?._id;
+      const payload = [bunId, ...ingredientsIds, bunId];
+      const result = await postOrder({ ingredients: payload }).unwrap();
+      setOrderDetails(result as Order);
+      dispatch(cleanOrder());
+    }
+  };
 
   return (
     <section className={styles.burger_constructor}>
-      <div className={styles.burger}>
-        {selectBurger.buns && (
-          <IngredientBurger isBuns item={selectBurger.buns} type="top" />
+      <div
+        ref={dropRef as unknown as React.Ref<HTMLDivElement>}
+        className={styles.burger}
+      >
+        {buns ? (
+          <OrderIngredient isBuns item={buns} type="top" />
+        ) : (
+          <OrderIngredient
+            type="top"
+            isPlaceholder
+            placeholder="Выберите булку"
+            hasBorder={typeDrag ? typeDrag === 'bun' : undefined}
+          />
         )}
         <div className={`${styles.ingredients} p-1`}>
-          {selectBurger.ingredients.map((item, index) => (
-            <IngredientBurger
-              item={item}
-              onDelete={() => deleteIngredient(index)}
-              key={item._id}
+          {ingredients.length > 0 ? (
+            <>
+              {ingredients.map((item) => (
+                <OrderIngredient
+                  item={item}
+                  onDelete={() => dispatch(deleteIngredient(item.nanoid))}
+                  key={item.nanoid}
+                />
+              ))}
+            </>
+          ) : (
+            <OrderIngredient
+              isPlaceholder
+              placeholder="Выберите начинку"
+              hasBorder={typeDrag ? typeDrag !== 'bun' : undefined}
             />
-          ))}
+          )}
         </div>
-        {selectBurger.buns && (
-          <IngredientBurger isBuns item={selectBurger.buns} type="bottom" />
+        {buns ? (
+          <OrderIngredient isBuns item={buns} type="bottom" />
+        ) : (
+          <OrderIngredient
+            type="bottom"
+            isPlaceholder
+            placeholder="Выберите булку"
+            isBuns
+            hasBorder={typeDrag ? typeDrag === 'bun' : undefined}
+          />
         )}
       </div>
       <div className={`${styles.create_order} mt-10`}>
         <PriceIngredient price={summary} />
-        <Button htmlType="submit" onClick={() => setIsOpenModal(true)}>
+        <Button htmlType="submit" onClick={handleSubmitOrder}>
           Оформить заказ
         </Button>
       </div>
-      {isOpenModal && (
-        <Modal onClose={() => setIsOpenModal(false)}>
-          <OrderDetails />
+      {isModalOpen && (
+        <Modal onClose={closeModal}>
+          {isLoading ? (
+            <Preloader />
+          ) : (
+            <>
+              {orderDetails ? (
+                <OrderDetails details={orderDetails} />
+              ) : (
+                <p>Ошибка оформления заказа</p>
+              )}
+            </>
+          )}
         </Modal>
       )}
     </section>
-  );
-};
-
-type IngredientBurgerProps = {
-  isBuns?: boolean;
-  item: TIngredient;
-  onDelete?: () => void;
-  type?: 'top' | 'bottom';
-};
-
-const IngredientBurger = ({
-  isBuns = false,
-  item,
-  onDelete,
-  type,
-}: IngredientBurgerProps): React.JSX.Element => {
-  return (
-    <div className={styles.ingredient__one}>
-      {!isBuns && <DragIcon type="primary" />}
-      <ConstructorElement
-        text={item.name}
-        price={item.price}
-        thumbnail={item.image}
-        type={type ?? undefined}
-        isLocked={isBuns}
-        handleClose={onDelete ?? undefined}
-      />
-    </div>
   );
 };

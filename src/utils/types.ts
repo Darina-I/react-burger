@@ -29,3 +29,8 @@ export type Order = {
 export type BurgerItem = {
   nanoid: string;
 } & TIngredient;
+
+export type TUser = {
+  name: string;
+  email: string;
+};

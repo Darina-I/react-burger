@@ -1,0 +1,15 @@
+.ingredient,
+.ingredient__info > * {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ingredient__info {
+  display: flex;
+  gap: 20px;
+}
+
+.ingredient__info p {
+  margin: 0 0 10px;
+}

@@ -1,0 +1,13 @@
+.main {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  height: 100vh;
+}
+
+.title {
+  width: 100%;
+  max-width: 1260px;
+  margin-right: auto;
+  margin-left: auto;
+}

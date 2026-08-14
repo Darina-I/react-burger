@@ -1,15 +1,10 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/useAppHooks';
 import { useGetIngredientsQuery } from '@/services/ingredients/ingredientsApi';
-import {
-  detailsIngredient,
-  closeIngredientModal,
-} from '@/services/ingredients/ingredientSlice';
+import { detailsIngredient } from '@/services/ingredients/ingredientSlice';
 import { Tab, Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 
 import { Ingredient } from '../ingredient-card/ingredient-card';
-import { IngredientDetails } from '../ingredient-details/ingredient-details';
-import { Modal } from '../modal/modal';
 
 import type { TIngredient } from '@utils/types';
 
@@ -19,8 +14,6 @@ export const BurgerIngredients = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
   const { data: ingredients, isLoading, error } = useGetIngredientsQuery();
 
-  const selectedIngredient = useAppSelector((state) => state.ingredient.details);
-  const isModalOpen = useAppSelector((state) => state.ingredient.isModalOpen);
   const order = useAppSelector((state) => state.order);
 
   const bunRef = useRef<HTMLParagraphElement | null>(null);
@@ -210,14 +203,9 @@ export const BurgerIngredients = (): React.JSX.Element => {
           ))}
         </ul>
       </div>
-      {isModalOpen && selectedIngredient && (
-        <Modal
-          title="Детали ингредиента"
-          onClose={() => dispatch(closeIngredientModal())}
-        >
-          <IngredientDetails item={selectedIngredient} />
-        </Modal>
-      )}
+      {/* {isModalOpen && selectedIngredient && (
+        <IngredientDetails item={selectedIngredient} />
+      )} */}
     </section>
   );
 };

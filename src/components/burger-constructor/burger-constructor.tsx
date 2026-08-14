@@ -20,6 +20,7 @@ import type { Order, TIngredient } from '@/utils/types';
 import styles from './burger-constructor.module.css';
 
 export const BurgerConstructor = (): React.JSX.Element => {
+  const isAuth = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
   const { isModalOpen, openModal, closeModal } = useModal();
   const [postOrder, { isLoading }] = usePostOrderMutation();
@@ -128,9 +129,11 @@ export const BurgerConstructor = (): React.JSX.Element => {
       </div>
       <div className={`${styles.create_order} mt-10`}>
         <PriceIngredient price={summary} />
-        <Button htmlType="submit" onClick={handleSubmitOrder}>
-          Оформить заказ
-        </Button>
+        {isAuth && (
+          <Button htmlType="submit" onClick={handleSubmitOrder}>
+            Оформить заказ
+          </Button>
+        )}
       </div>
       {isModalOpen && (
         <Modal onClose={closeModal}>

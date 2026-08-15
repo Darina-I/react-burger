@@ -33,7 +33,7 @@ export const checkAuthStatus = createAsyncThunk(
       if (result.success && result.user) {
         return { user: result.user, isAuthenticated: true };
       }
-      throw new Error('Token invalid');
+      return { user: null, isAuthenticated: false };
     } catch {
       return { user: null, isAuthenticated: false };
     }
@@ -147,7 +147,7 @@ export const userSlice = createSlice({
       })
       .addMatcher(userApi.endpoints.updateUser.matchFulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
+        state.user = action.payload?.user;
         state.isAuthenticated = true;
         state.error = null;
       })

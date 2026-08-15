@@ -9,6 +9,7 @@ import {
 import { Button, Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useState, useMemo } from 'react';
 import { useDrop } from 'react-dnd';
+import { useNavigate } from 'react-router-dom';
 
 import { Modal } from '../modal/modal';
 import { PriceIngredient } from '../price-ingredient/price-ingredient';
@@ -22,6 +23,7 @@ import styles from './burger-constructor.module.css';
 export const BurgerConstructor = (): React.JSX.Element => {
   const isAuth = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { isModalOpen, openModal, closeModal } = useModal();
   const [postOrder, { isLoading }] = usePostOrderMutation();
   const [orderDetails, setOrderDetails] = useState<Order>();
@@ -57,16 +59,20 @@ export const BurgerConstructor = (): React.JSX.Element => {
   }, [ingredients, buns]);
 
   const handleSubmitOrder = (): void => {
-    if (!buns || ingredients.length === 0) {
-      return;
+    if (isAuth) {
+      if (!buns || ingredients.length === 0) {
+        return;
+      }
+
+      openModal();
+
+      orderBurger().catch((err) => {
+        console.error('Ошибка при оформлении заказа:', err);
+        closeModal();
+      });
+    } else {
+      void navigate('/login');
     }
-
-    openModal();
-
-    orderBurger().catch((err) => {
-      console.error('Ошибка при оформлении заказа:', err);
-      closeModal();
-    });
   };
 
   const orderBurger = async (): Promise<void> => {
@@ -129,11 +135,9 @@ export const BurgerConstructor = (): React.JSX.Element => {
       </div>
       <div className={`${styles.create_order} mt-10`}>
         <PriceIngredient price={summary} />
-        {isAuth && (
-          <Button htmlType="submit" onClick={handleSubmitOrder}>
-            Оформить заказ
-          </Button>
-        )}
+        <Button htmlType="submit" onClick={handleSubmitOrder}>
+          Оформить заказ
+        </Button>
       </div>
       {isModalOpen && (
         <Modal onClose={closeModal}>

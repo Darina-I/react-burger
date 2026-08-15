@@ -44,7 +44,7 @@ export const ProfileForm = (): React.JSX.Element => {
       password: values.newPassword,
     };
 
-    await updateUser(data).unwrap();
+    await updateUser(data);
     setIsEditing(false);
   };
 

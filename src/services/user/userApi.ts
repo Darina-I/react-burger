@@ -4,11 +4,11 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithAuth } from '../api/baseQueryWithAuth';
 
 export const userApi = createApi({
-  reducerPath: 'authApi',
+  reducerPath: 'userApi',
   baseQuery: baseQueryWithAuth,
   endpoints: (builder) => ({
     checkAuth: builder.query<
-      { success: true; user: { email: string; name: string } },
+      { success: boolean; user: { email: string; name: string } },
       void
     >({
       query: () => ({

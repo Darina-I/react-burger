@@ -13,7 +13,6 @@ import { AppHeader } from '@components/app-header/app-header';
 import { Home } from '@pages/home/home';
 
 import { IngredientDetailsModal } from '../../pages/ingredient-details-modal/ingredient-details-modal';
-import { GuestRoute } from '../guest-route/guest-route';
 import { ProfileForm } from '../profile-form/profile-form';
 import { ProtectedRoute } from '../protected-route/protected-route';
 
@@ -41,33 +40,33 @@ export const App = (): React.JSX.Element => {
           <Route
             path="/login"
             element={
-              <GuestRoute>
+              <ProtectedRoute anonymous>
                 <LoginPage />
-              </GuestRoute>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/register"
             element={
-              <GuestRoute>
+              <ProtectedRoute anonymous>
                 <RegisterPage />
-              </GuestRoute>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/forgot-password"
             element={
-              <GuestRoute>
+              <ProtectedRoute anonymous>
                 <ForgotPasswordPage />
-              </GuestRoute>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/reset-password"
             element={
-              <GuestRoute>
+              <ProtectedRoute anonymous>
                 <ResetPasswordPage />
-              </GuestRoute>
+              </ProtectedRoute>
             }
           />
           <Route

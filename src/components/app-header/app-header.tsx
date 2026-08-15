@@ -4,12 +4,14 @@ import {
   Logo,
   ProfileIcon,
 } from '@krgaa/react-developer-burger-ui-components';
+import { useNavigate } from 'react-router-dom';
 
 import { AppLink } from '../app-link/app-link';
 
 import styles from './app-header.module.css';
 
 export const AppHeader = (): React.JSX.Element => {
+  const navigate = useNavigate();
   return (
     <header className={styles.header}>
       <nav className={`${styles.menu} p-4 text text_type_main-default`}>
@@ -29,7 +31,7 @@ export const AppHeader = (): React.JSX.Element => {
             Лента заказов
           </AppLink>
         </div>
-        <div className={styles.logo}>
+        <div className={styles.logo} onClick={() => void navigate('/')}>
           <Logo />
         </div>
         <div className={styles.link_position_last}>

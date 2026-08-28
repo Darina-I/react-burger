@@ -1,0 +1,16 @@
+.menu {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.logout {
+  color: var(--text-inactive-color);
+  cursor: pointer;
+}

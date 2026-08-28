@@ -1,5 +1,6 @@
 import { Counter } from '@krgaa/react-developer-burger-ui-components';
 import { useDrag } from 'react-dnd';
+import { Link, useLocation } from 'react-router-dom';
 
 import { PriceIngredient } from '../price-ingredient/price-ingredient';
 
@@ -24,21 +25,24 @@ export const Ingredient = ({
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
 
-  const handleClick = (): void => {
-    onClick(item);
-  };
+  const location = useLocation();
 
   return (
     <li
       ref={dragRef as unknown as React.Ref<HTMLLIElement>}
       className={`${styles.one_ingredients}`}
     >
-      <div onClick={handleClick}>
+      <Link
+        to={`/ingredients/${item._id}`}
+        state={{ backgroundLocation: location }}
+        onClick={() => onClick(item)}
+        className={styles.link}
+      >
         {counter > 0 && <Counter count={counter} />}
         <img src={item.image} alt={item.name} />
         <PriceIngredient price={item.price} />
         <p className={styles.ingredient_name}>{item.name}</p>
-      </div>
+      </Link>
     </li>
   );
 };

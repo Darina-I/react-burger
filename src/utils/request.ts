@@ -1,6 +1,5 @@
+import { BASE_URL_API } from '@api/config';
 import axios, { isAxiosError } from 'axios';
-
-import { BASE_URL_API } from './constant';
 
 type RequestOptions<TData = unknown> = {
   url: string;

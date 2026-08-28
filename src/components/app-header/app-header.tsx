@@ -4,31 +4,45 @@ import {
   Logo,
   ProfileIcon,
 } from '@krgaa/react-developer-burger-ui-components';
+import { useNavigate } from 'react-router-dom';
+
+import { AppLink } from '../app-link/app-link';
 
 import styles from './app-header.module.css';
 
 export const AppHeader = (): React.JSX.Element => {
+  const navigate = useNavigate();
   return (
     <header className={styles.header}>
-      <nav className={`${styles.menu} p-4`}>
+      <nav className={`${styles.menu} p-4 text text_type_main-default`}>
         <div className={styles.menu_part_left}>
-          {/* Тут должны быть ссылки, а не например кнопки или абзацы */}
-          <a href="/" className={`${styles.link} ${styles.link_active}`}>
-            <BurgerIcon type="primary" />
-            <p className="text text_type_main-default ml-2">Конструктор</p>
-          </a>
-          <a href="/feed" className={`${styles.link} ml-10`}>
-            <ListIcon type="secondary" />
-            <p className="text text_type_main-default ml-2">Лента заказов</p>
-          </a>
+          <AppLink
+            to="/"
+            activeIcon={<BurgerIcon type="primary" />}
+            inactiveIcon={<BurgerIcon type="secondary" />}
+          >
+            Конструктор
+          </AppLink>
+          <AppLink
+            to="/feed"
+            activeIcon={<ListIcon type="primary" />}
+            inactiveIcon={<ListIcon type="secondary" />}
+          >
+            Лента заказов
+          </AppLink>
         </div>
-        <div className={styles.logo}>
+        <div className={styles.logo} onClick={() => void navigate('/')}>
           <Logo />
         </div>
-        <a href="/profile" className={`${styles.link} ${styles.link_position_last}`}>
-          <ProfileIcon type="secondary" />
-          <p className="text text_type_main-default ml-2">Личный кабинет</p>
-        </a>
+        <div className={styles.link_position_last}>
+          <AppLink
+            to="/profile"
+            activeIcon={<ProfileIcon type="primary" />}
+            inactiveIcon={<ProfileIcon type="secondary" />}
+          >
+            Личный кабинет
+          </AppLink>
+        </div>
       </nav>
     </header>
   );

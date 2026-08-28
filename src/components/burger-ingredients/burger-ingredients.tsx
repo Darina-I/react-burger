@@ -1,15 +1,10 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/useAppHooks';
 import { useGetIngredientsQuery } from '@/services/ingredients/ingredientsApi';
-import {
-  detailsIngredient,
-  closeIngredientModal,
-} from '@/services/ingredients/ingredientSlice';
+import { detailsIngredient } from '@/services/ingredients/ingredientSlice';
 import { Tab, Preloader } from '@krgaa/react-developer-burger-ui-components';
-import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import { useState, useRef, useMemo, useCallback, useLayoutEffect } from 'react';
 
 import { Ingredient } from '../ingredient-card/ingredient-card';
-import { IngredientDetails } from '../ingredient-details/ingredient-details';
-import { Modal } from '../modal/modal';
 
 import type { TIngredient } from '@utils/types';
 
@@ -19,8 +14,6 @@ export const BurgerIngredients = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
   const { data: ingredients, isLoading, error } = useGetIngredientsQuery();
 
-  const selectedIngredient = useAppSelector((state) => state.ingredient.details);
-  const isModalOpen = useAppSelector((state) => state.ingredient.isModalOpen);
   const order = useAppSelector((state) => state.order);
 
   const bunRef = useRef<HTMLParagraphElement | null>(null);
@@ -69,7 +62,14 @@ export const BurgerIngredients = (): React.JSX.Element => {
   }, [order]);
 
   const handleScroll = useCallback(() => {
-    if (!listRef.current) return;
+    if (!listRef.current) {
+      return;
+    }
+
+    if (!bunRef.current || !sauceRef.current || !mainRef.current) {
+      return;
+    }
+
     const refs = [
       { ref: bunRef, type: 'bun' as const },
       { ref: sauceRef, type: 'sauce' as const },
@@ -87,7 +87,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
 
       const top = element.getBoundingClientRect().top - containerTop;
 
-      if (top <= 1 && top > maxTop) {
+      if (top <= 10 && top > maxTop) {
         maxTop = top;
         current = item;
       }
@@ -96,16 +96,15 @@ export const BurgerIngredients = (): React.JSX.Element => {
     if (current) setCurrentTab(current.type);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const container = listRef.current;
-    if (!container) return;
 
-    container.addEventListener('scroll', handleScroll, { passive: true });
+    container?.addEventListener('scroll', handleScroll, { passive: false });
 
     handleScroll();
 
-    return (): void => container.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
+    return (): void => container?.removeEventListener('scroll', handleScroll);
+  }, [ingredients]);
 
   const handleTabClick = useCallback(
     (tab: 'bun' | 'main' | 'sauce') => {
@@ -210,14 +209,6 @@ export const BurgerIngredients = (): React.JSX.Element => {
           ))}
         </ul>
       </div>
-      {isModalOpen && selectedIngredient && (
-        <Modal
-          title="Детали ингредиента"
-          onClose={() => dispatch(closeIngredientModal())}
-        >
-          <IngredientDetails item={selectedIngredient} />
-        </Modal>
-      )}
     </section>
   );
 };

@@ -1,4 +1,4 @@
-.ingredient__modal,
+.ingredient,
 .ingredient__info > * {
   display: flex;
   flex-direction: column;

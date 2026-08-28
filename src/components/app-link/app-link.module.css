@@ -1,0 +1,10 @@
+.link {
+  display: flex;
+  gap: 10px;
+  color: #8585ad;
+  text-decoration: none;
+}
+
+.activeLink {
+  color: white;
+}

@@ -11,3 +11,8 @@
   margin-top: 0;
   text-align: center;
 }
+
+.link {
+  color: inherit;
+  text-decoration: none;
+}

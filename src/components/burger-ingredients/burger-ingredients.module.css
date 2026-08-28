@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   width: 600px;
+  height: 100%;
   color: var(--text-primary-color);
   font-family: 'Jet Brains Mono', serif;
 }
@@ -15,8 +16,7 @@
 }
 
 .list_ingredients {
-  height: 95%;
-  overflow-y: auto;
+  overflow: auto;
 }
 
 .type_ingredients {
@@ -28,6 +28,13 @@
 .block_name {
   font-weight: bold;
   font-size: larger;
+}
+
+.block_name::before {
+  content: '';
+  display: block;
+  height: 20px; /* нужный отступ */
+  margin-top: -20px; /* компенсируем, чтобы сам заголовок не сдвигался */
 }
 
 .preloader {

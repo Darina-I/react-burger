@@ -1,0 +1,11 @@
+.total_price {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.itog_info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

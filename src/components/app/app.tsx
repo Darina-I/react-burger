@@ -1,4 +1,6 @@
 import { useAppDispatch } from '@/hooks/useAppHooks';
+import { FeedOrderDetailsModal } from '@/pages/feed-order-details-modal/feed-order-details-modal';
+import { FeedPage } from '@/pages/feed/feed';
 import { ForgotPasswordPage } from '@/pages/forgot-password/forgot-password';
 import { IngredientDetails } from '@/pages/ingredient-details/ingredient-details';
 import { LoginPage } from '@/pages/login/login';
@@ -12,7 +14,9 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { AppHeader } from '@components/app-header/app-header';
 import { Home } from '@pages/home/home';
 
+import { FeedOrderDetails } from '../../pages/feed-order-details/feed-order-details';
 import { IngredientDetailsModal } from '../../pages/ingredient-details-modal/ingredient-details-modal';
+import { ListOrdersUser } from '../list-orders-user/list-orders-user';
 import { ProfileForm } from '../profile-form/profile-form';
 import { ProtectedRoute } from '../protected-route/protected-route';
 
@@ -78,29 +82,55 @@ export const App = (): React.JSX.Element => {
             }
           >
             <Route index element={<ProfileForm />} />
-            <Route
-              path="orders"
-              element={
-                <div className="text text_type_main-default text_color_inactive">
-                  Страница находится в разработке
-                </div>
-              }
-            />
+            <Route path="orders" element={<ListOrdersUser />} />
           </Route>
+          <Route
+            path="/profile/orders/:id"
+            element={
+              <ProtectedRoute>
+                <FeedOrderDetails />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/" element={<Home />} />
           <Route path="/ingredients/:id" element={<IngredientDetails />} />
           <Route
             path="/feed"
             element={
-              <div className="text text_type_main-default text_color_inactive">
-                Страница находится в разработке
-              </div>
+              <ProtectedRoute>
+                <FeedPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/feed/:id"
+            element={
+              <ProtectedRoute>
+                <FeedOrderDetails />
+              </ProtectedRoute>
             }
           />
         </Routes>
         {backgroundLocation && (
           <Routes>
             <Route path="/ingredients/:id" element={<IngredientDetailsModal />} />
+            <Route
+              path="/feed/:id"
+              element={
+                <ProtectedRoute>
+                  <FeedOrderDetailsModal />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/orders/:id"
+              element={
+                <ProtectedRoute>
+                  <FeedOrderDetailsModal />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         )}
       </main>

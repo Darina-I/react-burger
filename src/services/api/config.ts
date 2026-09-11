@@ -13,3 +13,5 @@ export const publicEndpoints = new Set([
   'passwordReset',
   'resetCode',
 ]);
+
+export const ORDER_WS_API = 'wss://new-stellarburgers.education-services.ru/orders';

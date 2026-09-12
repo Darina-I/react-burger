@@ -95,34 +95,13 @@ export const App = (): React.JSX.Element => {
 
           <Route path="/" element={<Home />} />
           <Route path="/ingredients/:id" element={<IngredientDetails />} />
-          <Route
-            path="/feed"
-            element={
-              <ProtectedRoute>
-                <FeedPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/feed/:id"
-            element={
-              <ProtectedRoute>
-                <FeedOrderDetails />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/feed/:id" element={<FeedOrderDetails />} />
         </Routes>
         {backgroundLocation && (
           <Routes>
             <Route path="/ingredients/:id" element={<IngredientDetailsModal />} />
-            <Route
-              path="/feed/:id"
-              element={
-                <ProtectedRoute>
-                  <FeedOrderDetailsModal />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/feed/:id" element={<FeedOrderDetailsModal />} />
             <Route
               path="/profile/orders/:id"
               element={

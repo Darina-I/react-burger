@@ -64,7 +64,7 @@ export const FeedItem = ({ order }: FeedItemProps): React.JSX.Element => {
             const ingredient = ingredients?.find((i) => i._id === item);
             return (
               <img
-                key={ingredient?._id}
+                key={index}
                 className={styles.img_ingredient}
                 src={ingredient?.image}
                 style={{ transform: `translate(${index * 50}px` }}

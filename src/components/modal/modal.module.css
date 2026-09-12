@@ -9,6 +9,7 @@
 
 .modal__window {
   position: relative;
+  max-width: 60%;
   background-color: var(--background-alt);
   border-radius: 10px;
 }

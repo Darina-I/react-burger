@@ -47,7 +47,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
     if (ingredients.length === 0) {
       return 0;
     }
-    let sum = ingredients.reduce((acc, ingredient) => {
+    let sum = ingredients.reduce((acc: number, ingredient) => {
       const price = Number(ingredient.price);
       return acc + price;
     }, 0);

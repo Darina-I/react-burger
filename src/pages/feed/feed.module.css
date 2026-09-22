@@ -1,0 +1,31 @@
+.feed_main {
+  display: flex;
+  gap: 100px;
+  height: 100%;
+}
+
+.feed_list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+  overflow: auto;
+}
+
+.feed_info {
+  flex: 1;
+}
+
+.orders_list {
+  display: flex;
+  gap: 30%;
+}
+
+.orders_list ul {
+  display: flex;
+  flex-flow: column wrap;
+  gap: 5px 20px;
+  height: 300px;
+  padding: 0;
+  list-style-type: none;
+}

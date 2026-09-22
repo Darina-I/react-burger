@@ -1,0 +1,36 @@
+.ingredients_list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 350px;
+  padding: 0;
+  overflow: auto;
+  list-style-type: none;
+}
+
+.ingredients_list img {
+  width: 80px;
+  padding: 1px;
+  background-color: var(--background-alt);
+  border: 1px solid #4c4cff;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.list_item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
+.list_item p {
+  flex: 1;
+}
+
+.ingredient_price {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

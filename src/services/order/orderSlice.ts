@@ -1,16 +1,20 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit';
 
-import type { BurgerItem, TIngredient } from '@/utils/types';
+import type { BurgerItem, OrderIngredient, TIngredient } from '@/utils/types';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 type OrderState = {
   buns: BurgerItem | null;
   ingredients: BurgerItem[];
+  currentOrder: OrderIngredient | null;
+  isModalOpen: boolean;
 };
 
 const initialState: OrderState = {
   buns: null,
   ingredients: [],
+  currentOrder: null,
+  isModalOpen: false,
 };
 
 export const OrderSlice = createSlice({
@@ -52,9 +56,23 @@ export const OrderSlice = createSlice({
       state.buns = null;
       state.ingredients = [];
     },
+    openDetailsOrder: (state, action: PayloadAction<OrderIngredient | null>) => {
+      state.currentOrder = action.payload;
+      state.isModalOpen = true;
+    },
+    closeDetailsModal: (state) => {
+      state.currentOrder = null;
+      state.isModalOpen = false;
+    },
   },
 });
 
-export const { addIngredient, deleteIngredient, moveIngredient, cleanOrder } =
-  OrderSlice.actions;
+export const {
+  addIngredient,
+  deleteIngredient,
+  moveIngredient,
+  cleanOrder,
+  openDetailsOrder,
+  closeDetailsModal,
+} = OrderSlice.actions;
 export default OrderSlice.reducer;

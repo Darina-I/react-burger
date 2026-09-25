@@ -1,6 +1,7 @@
 # Стартер на TypeScript для проекта Stellar Burger
 
 _проект изначально написан на TS_
+Ссылка на деплой проекта: https://darina-i.github.io/react-burger
 
 ## Процедура создания коммита с проверками
 

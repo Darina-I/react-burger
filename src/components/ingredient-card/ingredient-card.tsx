@@ -29,6 +29,7 @@ export const Ingredient = ({
 
   return (
     <li
+      data-testid="ingredient-card"
       ref={dragRef as unknown as React.Ref<HTMLLIElement>}
       className={`${styles.one_ingredients}`}
     >
@@ -41,7 +42,9 @@ export const Ingredient = ({
         {counter > 0 && <Counter count={counter} />}
         <img src={item.image} alt={item.name} />
         <PriceIngredient price={item.price} />
-        <p className={styles.ingredient_name}>{item.name}</p>
+        <p className={styles.ingredient_name} data-testid="ingredient-name">
+          {item.name}
+        </p>
       </Link>
     </li>
   );

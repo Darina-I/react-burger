@@ -131,7 +131,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
 
   if (isLoading) {
     return (
-      <div className={styles.preloader}>
+      <div className={styles.preloader} data-testid="preloader">
         <Preloader />
       </div>
     );
@@ -172,7 +172,7 @@ export const BurgerIngredients = (): React.JSX.Element => {
         <p ref={bunRef} className={styles.block_name}>
           Булки
         </p>
-        <ul className={`${styles.type_ingredients}`}>
+        <ul data-testid="buns-list" className={`${styles.type_ingredients}`}>
           {buns.map((i) => (
             <Ingredient
               key={i._id}
@@ -185,7 +185,10 @@ export const BurgerIngredients = (): React.JSX.Element => {
         <p ref={sauceRef} className={styles.block_name}>
           Соусы
         </p>
-        <ul className={`${styles.type_ingredients} custom-scroll`}>
+        <ul
+          data-testid="sauces-list"
+          className={`${styles.type_ingredients} custom-scroll`}
+        >
           {sauces.map((i) => (
             <Ingredient
               key={i._id}
@@ -198,7 +201,10 @@ export const BurgerIngredients = (): React.JSX.Element => {
         <p ref={mainRef} className={styles.block_name}>
           Начинки
         </p>
-        <ul className={`${styles.type_ingredients} custom-scroll`}>
+        <ul
+          data-testid="mains-list"
+          className={`${styles.type_ingredients} custom-scroll`}
+        >
           {mains.map((i) => (
             <Ingredient
               key={i._id}

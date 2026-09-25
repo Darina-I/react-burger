@@ -1,0 +1,16 @@
+export const BASE_URL_API = " https://new-stellarburgers.education-services.ru/api";
+export const INGREDIENT_API = `/ingredients`;
+export const ORDER_API = "/orders";
+export const AUTH_API = "/auth";
+export const USER_API = "/auth/user";
+export const RESET_PASSWORD_API = "/password-reset";
+export const publicEndpoints = /* @__PURE__ */ new Set([
+  "login",
+  "register",
+  "refresh",
+  "passwordReset",
+  "resetCode"
+]);
+export const ORDER_WS_API = "wss://new-stellarburgers.education-services.ru/orders";
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvbmZpZy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgY29uc3QgQkFTRV9VUkxfQVBJID0gJyBodHRwczovL25ldy1zdGVsbGFyYnVyZ2Vycy5lZHVjYXRpb24tc2VydmljZXMucnUvYXBpJztcblxuZXhwb3J0IGNvbnN0IElOR1JFRElFTlRfQVBJID0gYC9pbmdyZWRpZW50c2A7XG5leHBvcnQgY29uc3QgT1JERVJfQVBJID0gJy9vcmRlcnMnO1xuZXhwb3J0IGNvbnN0IEFVVEhfQVBJID0gJy9hdXRoJztcbmV4cG9ydCBjb25zdCBVU0VSX0FQSSA9ICcvYXV0aC91c2VyJztcbmV4cG9ydCBjb25zdCBSRVNFVF9QQVNTV09SRF9BUEkgPSAnL3Bhc3N3b3JkLXJlc2V0JztcblxuZXhwb3J0IGNvbnN0IHB1YmxpY0VuZHBvaW50cyA9IG5ldyBTZXQoW1xuICAnbG9naW4nLFxuICAncmVnaXN0ZXInLFxuICAncmVmcmVzaCcsXG4gICdwYXNzd29yZFJlc2V0JyxcbiAgJ3Jlc2V0Q29kZScsXG5dKTtcblxuZXhwb3J0IGNvbnN0IE9SREVSX1dTX0FQSSA9ICd3c3M6Ly9uZXctc3RlbGxhcmJ1cmdlcnMuZWR1Y2F0aW9uLXNlcnZpY2VzLnJ1L29yZGVycyc7XG4iXSwibWFwcGluZ3MiOiJBQUFPLGFBQU0sZUFBZTtBQUVyQixhQUFNLGlCQUFpQjtBQUN2QixhQUFNLFlBQVk7QUFDbEIsYUFBTSxXQUFXO0FBQ2pCLGFBQU0sV0FBVztBQUNqQixhQUFNLHFCQUFxQjtBQUUzQixhQUFNLGtCQUFrQixvQkFBSSxJQUFJO0FBQUEsRUFDckM7QUFBQSxFQUNBO0FBQUEsRUFDQTtBQUFBLEVBQ0E7QUFBQSxFQUNBO0FBQ0YsQ0FBQztBQUVNLGFBQU0sZUFBZTsiLCJuYW1lcyI6W119

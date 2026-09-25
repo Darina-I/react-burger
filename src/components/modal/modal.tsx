@@ -38,7 +38,7 @@ export const Modal = ({
   }
 
   return createPortal(
-    <div className={styles.modal}>
+    <div className={styles.modal} data-testid="modal">
       <ModalOverlay onClose={onClose} />
       <div
         onClick={(e) => e.stopPropagation()}

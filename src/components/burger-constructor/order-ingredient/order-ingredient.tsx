@@ -55,6 +55,10 @@ export const OrderIngredient = ({
   return (
     <div
       ref={dropRef as unknown as React.Ref<HTMLDivElement>}
+      data-testid={
+        !isPlaceholder &&
+        (type === 'top' ? 'constructor-bun-top' : 'constructor-bun-bottom')
+      }
       style={{
         opacity: isDragging ? 0.5 : 1,
         position: 'relative',

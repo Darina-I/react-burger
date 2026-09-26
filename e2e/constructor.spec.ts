@@ -1,10 +1,17 @@
 import { test, expect } from '@playwright/test';
 
+test.use({
+  baseURL: 'http://127.0.0.1:5173',
+  serviceWorkers: 'block',
+  trace: 'on-first-retry',
+});
+
 test.describe.serial('Конструктор бургера', () => {
   test.beforeEach(async ({ page }) => {
     await page.routeFromHAR('./e2e/har/ingredients.har', {
       url: '**/api/**',
       update: false,
+      notFound: 'fallback',
     });
 
     await page.goto('/');

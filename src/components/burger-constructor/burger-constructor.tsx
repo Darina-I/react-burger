@@ -89,6 +89,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
   return (
     <section className={styles.burger_constructor}>
       <div
+        data-testid="burger-constructor-drop"
         ref={dropRef as unknown as React.Ref<HTMLDivElement>}
         className={styles.burger}
       >
@@ -102,7 +103,10 @@ export const BurgerConstructor = (): React.JSX.Element => {
             hasBorder={typeDrag ? typeDrag === 'bun' : undefined}
           />
         )}
-        <div className={`${styles.ingredients} p-1`}>
+        <div
+          data-testid="constructor-ingredients"
+          className={`${styles.ingredients} p-1`}
+        >
           {ingredients.length > 0 ? (
             <>
               {ingredients.map((item) => (

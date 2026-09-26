@@ -1,4 +1,4 @@
-export const BASE_URL_API = ' https://new-stellarburgers.education-services.ru/api';
+export const BASE_URL_API = 'https://new-stellarburgers.education-services.ru/api';
 
 export const INGREDIENT_API = `/ingredients`;
 export const ORDER_API = '/orders';

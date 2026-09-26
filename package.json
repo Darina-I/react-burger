@@ -11,6 +11,7 @@
     "e2e": "npx playwright test",
     "e2e:ui": "npx playwright test --ui",
     "dev": "vite",
+    "dev:ci": "vite --host --port 5173",
     "deploy": "gh-pages -d dist",
     "eslint": "eslint ./src/ --fix",
     "lint": "npm run stylelint && npm run eslint && npm run prettier",

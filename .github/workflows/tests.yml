@@ -26,6 +26,8 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm test
+      - run: npx playwright install --with-deps
+      - run: npm run e2e
 
   build:
     needs: [lint, test]
